@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Rash Classifier</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body class="bg-gray-100 min-h-screen flex flex-col items-center py-10">
+
+    <h1 class="text-4xl font-bold text-gray-800 mb-6">
+        Dermatology Rash Classifier
+    </h1>
+
+    <div class="bg-white shadow-lg rounded-xl p-8 w-full max-w-lg">
+
+        <!-- Image Preview -->
+        <div id="preview-container" class="hidden mb-6">
+            <img id="preview-img" class="rounded-lg shadow-md w-full" />
+        </div>
+
+        <!-- File Upload -->
+        <label class="block mb-4">
+            <span class="text-gray-700 font-semibold">Upload Image</span>
+            <input type="file" id="fileInput"
+                class="mt-2 block w-full text-sm text-gray-700 border border-gray-300 rounded-lg p-2 cursor-pointer" 
+                accept="image/*"
+                onchange="showPreview(event)">
+        </label>
+
+        <!-- Predict Button -->
+        <button onclick="sendImage()"
+            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg transition">
+            Predict Rash Type
+        </button>
+
+        <!-- Results -->
+        <div id="result" class="mt-8"></div>
+
+    </div>
+
+    <script>
+        function showPreview(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const img = document.getElementById("preview-img");
+            img.src = URL.createObjectURL(file);
+            document.getElementById("preview-container").classList.remove("hidden");
+        }
+
+        async function sendImage() {
+            const file = document.getElementById("fileInput").files[0];
+            if (!file) return alert("Please select an image first!");
+
+            const formData = new FormData();
+            formData.append("file", file);
+
+            const res = await fetch("/predict/", {
+                method: "POST",
+                body: formData
+            });
+
+            const data = await res.json();
+
+            if (data.error) {
+                document.getElementById("result").innerHTML =
+                    `<p class="text-red-600 font-semibold">Error: ${data.error}</p>`;
+                return;
+            }
+
+            let html = `
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Top 3 Predictions</h2>
+
+                <div class="flex justify-between px-4 mb-2 text-gray-600 font-semibold">
+                <span>Condition</span>
+                <span>Confidence</span>
+                </div>
+
+                    <ul class="space-y-3">  
+            `;
+
+            data.top3.forEach(x => {
+                html += `
+                    <li class="bg-gray-50 p-4 rounded-lg shadow-sm flex justify-between items-center">
+                        <span class="font-medium text-gray-700">${x.class}</span>
+                        <span class="text-blue-600 font-bold">${(x.probability * 100).toFixed(2)}%</span>
+                    </li>
+                `;
+            });
+
+            html += "</ul>";
+
+            document.getElementById("result").innerHTML = html;
+        }
+    </script>
+
+</body>
+</html>

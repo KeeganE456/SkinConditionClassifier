@@ -8,11 +8,10 @@ from PIL import Image
 import io, json
 
 from model import RashCNN
-from mangum import Mangum
 
 app = FastAPI()
 
-# Serve frontend 
+# Serve frontend
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 @app.get("/", response_class=HTMLResponse)
@@ -56,6 +55,3 @@ async def predict(file: UploadFile = File(...)):
         })
 
     return {"top3": results}
-
-# THIS IS REQUIRED FOR VERCEL 
-handler = Mangum(app)

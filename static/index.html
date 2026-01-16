@@ -14,12 +14,26 @@
 
     <div class="bg-white shadow-lg rounded-xl p-8 w-full max-w-lg">
 
-        <!-- Image Preview -->
+        <div id="welcome" class="mb-6 text-center">
+    <h2 class="text-2xl font-bold text-gray-800 mb-2">
+        Welcome
+    </h2>
+    <p class="text-gray-600 mb-4">
+        Upload a clear photo of a skin rash to receive an AI-assisted classification.
+    </p>
+    <ul class="text-sm text-gray-500 space-y-1">
+        <li>Supports eczema, psoriasis, ringworm, and healthy skin</li>
+        <li>Results shown with confidence scores</li>
+        <li>Not a medical diagnosis</li>
+    </ul>
+</div>
+
+        
         <div id="preview-container" class="hidden mb-6">
             <img id="preview-img" class="rounded-lg shadow-md w-full" />
         </div>
 
-        <!-- File Upload -->
+        
         <label class="block mb-4">
             <span class="text-gray-700 font-semibold">Upload Image</span>
             <input type="file" id="fileInput"
@@ -28,25 +42,28 @@
                 onchange="showPreview(event)">
         </label>
 
-        <!-- Predict Button -->
+        
         <button onclick="sendImage()"
             class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg transition">
             Predict Rash Type
         </button>
 
-        <!-- Results -->
+        
         <div id="result" class="mt-8"></div>
 
     </div>
 
     <script>
         function showPreview(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const img = document.getElementById("preview-img");
-            img.src = URL.createObjectURL(file);
-            document.getElementById("preview-container").classList.remove("hidden");
-        }
+    const file = event.target.files[0];
+    if (!file) return;
+
+    document.getElementById("welcome").classList.add("hidden");
+
+    const img = document.getElementById("preview-img");
+    img.src = URL.createObjectURL(file);
+    document.getElementById("preview-container").classList.remove("hidden");
+}
 
         async function sendImage() {
             const file = document.getElementById("fileInput").files[0];
